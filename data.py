@@ -6,7 +6,9 @@ from data_generation.data_utils import decode_hex
 from torch.utils.data import Dataset
 
 # Load configuration from YAML file
-with open("config.yaml", 'r') as file:
+project_root=os.getcwd()
+config_file = os.path.join(project_root, 'config.yaml')
+with open(config_file, "r") as file:
     data = yaml.safe_load(file)
 
 # Extract configuration parameters

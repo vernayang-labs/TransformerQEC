@@ -4,9 +4,11 @@ from positional_encodings.torch_encodings import PositionalEncoding3D
 import polars as pl
 from data_generation.data_utils import decode_hex
 from torch.utils.data import Dataset
+from pathlib import Path
+
 
 # Load configuration from YAML file
-project_root=os.getcwd()
+project_root=Path.cwd()
 config_file = os.path.join(project_root, 'config.yaml')
 with open(config_file, "r") as file:
     data = yaml.safe_load(file)

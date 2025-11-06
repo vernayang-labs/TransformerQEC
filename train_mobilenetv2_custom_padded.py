@@ -1,4 +1,6 @@
 import yaml, os, numpy as np
+from pathlib import Path
+
 from torch.utils.data import DataLoader, random_split
 
 import lightning as L
@@ -19,7 +21,7 @@ print(f'Using device: {device}')
 
 
 # Load configuration from YAML file
-project_root=os.getcwd()
+project_root=Path.cwd()
 config_file = os.path.join(project_root, 'config.yaml')
 with open(config_file, "r") as file:
     data = yaml.safe_load(file)

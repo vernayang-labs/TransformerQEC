@@ -44,9 +44,11 @@ class QuantumSyndromeDataset(Dataset):
 
     def __getitem__(self, index):
         inputs = self.prepare_input_tensor(index)
+        # print(inputs.shape)
         outputs = self.prepare_output_tensor(index)
         outputs = torch.stack((outputs['X'], outputs['Y'], outputs['Z']))
         outputs = outputs.reshape(-1)
+        # print(outputs.shape)
         return inputs.to(DEVICE), outputs.to(DEVICE)
 
 
@@ -132,7 +134,7 @@ class QuantumSyndromeDataset(Dataset):
 
 if __name__ == "__main__":
     data = QuantumSyndromeDataset()
-
     x = data[5]
+    print(x[0][:].shape)
     print(x[1].shape)
     

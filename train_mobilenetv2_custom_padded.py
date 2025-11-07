@@ -122,12 +122,17 @@ def train(epoch):
     
     print(f'Epoch {epoch} - Loss: {running_loss / len(train_loader):.4f}, Accuracy: {total_acc / total_samples:.4f}')
 
-# Validation function
+# Validation function incluing confusion metrics
 def validate():
     model.eval()
     running_loss = 0.0
     total_acc = 0.0
     total_samples = 0
+    # Accumulators for confusion metrics (global across all labels)
+    TP = 0
+    TN = 0
+    FP = 0
+    FN = 0
     with torch.no_grad():
         for data in tqdm(test_loader, desc='Validating'):
             inputs, labels = data[0].to(device), data[1].to(device)
@@ -138,9 +143,24 @@ def validate():
             acc = (preds == labels).float().mean()
             total_acc += acc * labels.size(0)
             total_samples += labels.size(0)
+            
+            # Compute confusion components (flatten for global metrics)
+            flat_preds = preds.view(-1)
+            flat_labels = labels.view(-1)
+            TP += ((flat_preds == 1) & (flat_labels == 1)).sum().item()
+            TN += ((flat_preds == 0) & (flat_labels == 0)).sum().item()
+            FP += ((flat_preds == 1) & (flat_labels == 0)).sum().item()
+            FN += ((flat_preds == 0) & (flat_labels == 1)).sum().item()
     
-    print(f'Validation - Loss: {running_loss / len(test_loader):.4f}, Accuracy: {total_acc / total_samples:.4f}')
-
+    avg_loss = running_loss / len(test_loader)
+    avg_acc = total_acc / total_samples
+    precision = TP / (TP + FP) if (TP + FP) > 0 else 0.0
+    recall = TP / (TP + FN) if (TP + FN) > 0 else 0.0
+    f1 = 2 * (precision * recall) / (precision + recall) if (precision + recall) > 0 else 0.0
+    
+    print(f'Validation - Loss: {avg_loss:.4f}, Accuracy: {avg_acc:.4f}')
+    print(f'Confusion Metrics - Precision: {precision:.4f}, Recall: {recall:.4f}, F1-Score: {f1:.4f}')
+    print(f' TP: {TP}, TN: {TN}, FP: {FP}, FN: {FN}')
 # Train for 5 epochs (adjust as needed)
 num_epochs = 5
 for epoch in range(1, num_epochs + 1):
